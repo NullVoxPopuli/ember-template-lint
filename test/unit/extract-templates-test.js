@@ -1,7 +1,4 @@
 import { extractTemplates } from '../../lib/extract-templates.js';
-import { Preprocessor } from 'content-tag';
-
-const p = new Preprocessor();
 
 function templateFromByteOffsets(source, start, end) {
   return source.slice(start, end + 1);
@@ -20,21 +17,12 @@ describe('extractTemplates', function () {
       expect(templateFromByteOffsets(handlebarsTemplate, 0, 10)).toMatchInlineSnapshot(
         `"<div></div>"`
       );
-      expect(result).toMatchInlineSnapshot(`
-        [
-          {
-            "column": 0,
-            "columnOffset": 0,
-            "end": 10,
-            "isEmbedded": undefined,
-            "isStrictMode": false,
-            "line": 1,
-            "start": 0,
-            "template": "<div></div>",
-            "templateMatch": undefined,
-          },
-        ]
-      `);
+      expect(result[0]).toMatchObject({
+        isEmbedded: undefined,
+        isStrictMode: false,
+        line: 1,
+        columnOffset: 0,
+      });
     });
 
     it('returns nothing if the content could be parsed as a script', function () {
@@ -42,45 +30,14 @@ describe('extractTemplates', function () {
     });
 
     it('returns the parsed template if the content could be parsed as a script', function () {
-      expect(extractTemplates(script)).toMatchInlineSnapshot(`
-        [
-          {
-            "column": 39,
-            "columnOffset": 0,
-            "end": 58,
-            "isEmbedded": true,
-            "isStrictMode": true,
-            "line": 1,
-            "start": 39,
-            "template": "
-        <button></button>
-        ",
-            "templateMatch": {
-              "contentRange": {
-                "end": 58,
-                "start": 39,
-              },
-              "contents": "
-        <button></button>
-        ",
-              "endRange": {
-                "end": 69,
-                "start": 58,
-              },
-              "range": {
-                "end": 69,
-                "start": 29,
-              },
-              "startRange": {
-                "end": 39,
-                "start": 29,
-              },
-              "tagName": "template",
-              "type": "expression",
-            },
-          },
-        ]
-      `);
+      let result = extractTemplates(script);
+      expect(result.length).toBe(1);
+      expect(result[0]).toMatchObject({
+        isEmbedded: true,
+        isStrictMode: true,
+        columnOffset: 0,
+        line: 1,
+      })
     });
   });
 

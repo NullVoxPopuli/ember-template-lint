@@ -1,4 +1,4 @@
-import { extractTemplates } from '../../lib/extract-templates.js';
+import { extractTemplates } from '../../lib/template-info.js';
 
 function templateFromByteOffsets(source, start, end) {
   return source.slice(start, end + 1);
